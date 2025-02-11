@@ -12,11 +12,14 @@ import Typography from '@mui/material/Typography';
 import { jwtDecode } from 'jwt-decode';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+<<<<<<< HEAD
+=======
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
 
 interface User {
   id?: string;
@@ -31,7 +34,10 @@ export function AccountInfo(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
+<<<<<<< HEAD
+=======
   const [openSuccess, setOpenSuccess] = useState(false); // État pour le Dialog
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
   const router = useRouter();
 
   useEffect(() => {
@@ -100,16 +106,57 @@ export function AccountInfo(): React.JSX.Element {
   
       const data = await response.json();
       setUser((prev) => ({ ...prev, photo: data.photo }));
+<<<<<<< HEAD
+      alert("Image mise à jour avec succès !");
+=======
       setOpenSuccess(true); // Ouvre le Dialog après succès
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
     } catch (error) {
       console.error("Erreur upload:", error);
       alert("Erreur de connexion au serveur.");
     }
   };
+<<<<<<< HEAD
+  
+=======
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
 
   if (loading) return <p>Chargement...</p>;
 
   return (
+<<<<<<< HEAD
+    <Card>
+      <CardContent>
+        <Stack spacing={2} sx={{ alignItems: 'center' }}>
+          <Avatar src={image || user?.photo} sx={{ height: 80, width: 80 }} />
+          <Stack spacing={1} sx={{ textAlign: 'center' }}>
+            <Typography variant="h5">{`${user?.nom} ${user?.prenom}`.trim()}</Typography>
+            <Typography color="text.secondary" variant="body2">
+              {user?.statut}
+            </Typography>
+          </Stack>
+        </Stack>
+      </CardContent>
+      <Divider />
+      <CardActions>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          style={{ display: 'none' }}
+          id="upload-photo"
+        />
+        <label htmlFor="upload-photo" style={{ width: '100%' }}>
+          <Button fullWidth variant="text" component="span">
+            Choisir une photo
+          </Button>
+        </label>
+        <Button fullWidth variant="contained" color="primary" onClick={handleUpload} disabled={!file}>
+          Mettre à jour
+        </Button>
+      </CardActions>
+    </Card>
+=======
     <>
       <Card>
         <CardContent>
@@ -156,5 +203,6 @@ export function AccountInfo(): React.JSX.Element {
         </DialogActions>
       </Dialog>
     </>
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
   );
 }

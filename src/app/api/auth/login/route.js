@@ -9,7 +9,11 @@ export async function POST(req) {
     return new Response(JSON.stringify({ message: 'Email et mot de passe sont requis' }), { status: 400 });
   }
 
+<<<<<<< HEAD
+  const [rows] = await db.execute('SELECT * FROM professeurs WHERE email = ?', [email]);
+=======
   const [rows] = await db.execute('SELECT * FROM professeur WHERE email = ?', [email]);
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
   const user = rows[0];
 
   if (!user) {

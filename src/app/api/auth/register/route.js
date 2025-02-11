@@ -19,7 +19,11 @@ export async function POST(req) {
     }
 
     // Vérifier si l'email existe déjà
+<<<<<<< HEAD
+    const [existingUser] = await db.query('SELECT * FROM professeurs WHERE email = ?', [email]);
+=======
     const [existingUser] = await db.query('SELECT * FROM professeur WHERE email = ?', [email]);
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
     if (existingUser.length > 0) {
       return Response.json({ error: 'Email déjà utilisé' }, { status: 400 });
     }
@@ -35,8 +39,13 @@ export async function POST(req) {
 
     // Insérer dans la base de données
     await db.query(
+<<<<<<< HEAD
+      'INSERT INTO professeurs (nom, prenom, email, password, photo,telephone,statut) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [nom, prenom, email, hashedPassword, photoPath]
+=======
       'INSERT INTO professeur (nom, prenom, email, password, photo,telephone,statut) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [nom, prenom, email, hashedPassword, photoPath,telephone,statut]
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
     );
 
     return Response.json({ message: 'Inscription réussie', photo: photoPath }, { status: 201 });
