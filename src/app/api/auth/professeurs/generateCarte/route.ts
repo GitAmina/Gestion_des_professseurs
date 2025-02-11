@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Récupérer les infos du professeur
-    const professeur = await prisma.professeurs.findUnique({
+    const professeur = await prisma.professeur.findUnique({
       where: { id: Number(id) },
       include: { matieres: { include: { matiere: true } } },
     });

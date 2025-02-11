@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
@@ -17,13 +16,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 import { CloudUpload } from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
-<<<<<<< HEAD
-import Link from 'next/link';
-
-=======
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
->>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
+
 const schema = zod.object({
   nom: zod.string().min(1, { message: 'Le nom est requis' }),
   prenom: zod.string().min(1, { message: 'Le prénom est requis' }),
@@ -36,14 +31,14 @@ const schema = zod.object({
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { 
-  nom: '', 
-  prenom: '', 
-  email: '', 
-  telephone: '', 
-  statut: '', 
-  password: '', 
-  photo: undefined 
+const defaultValues = {
+  nom: '',
+  prenom: '',
+  email: '',
+  telephone: '',
+  statut: '',
+  password: '',
+  photo: undefined
 } satisfies Values;
 
 export function SignUpForm(): React.JSX.Element {
@@ -79,7 +74,7 @@ export function SignUpForm(): React.JSX.Element {
       Object.entries(values).forEach(([key, value]) => {
         if (value) formData.append(key, value);
       });
-      
+
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         body: formData
@@ -192,15 +187,9 @@ export function SignUpForm(): React.JSX.Element {
       </form>
       <Typography color="text.secondary" variant="body2">
     Vous êtes déjà inscrit ?{' '}
-<<<<<<< HEAD
-    <Link compone={RouterLink} href={'/auth/sign-in'} underline="hover" variant="subtitle2">
-      Connectez-vous
-    </Link>
-=======
     <Link component={NextLink} href="/auth/sign-in" passHref underline="hover" variant="subtitle2">
   Connectez-vous
 </Link>
->>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
   </Typography>
     </Stack>
   );
