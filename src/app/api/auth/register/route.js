@@ -36,7 +36,7 @@ export async function POST(req) {
     // Insérer dans la base de données
     await db.query(
       'INSERT INTO professeurs (nom, prenom, email, password, photo,telephone,statut) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [nom, prenom, email, hashedPassword, photoPath]
+      [nom, prenom, email, hashedPassword, photoPath,telephone,statut]
     );
 
     return Response.json({ message: 'Inscription réussie', photo: photoPath }, { status: 201 });
