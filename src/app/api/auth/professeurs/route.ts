@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method === 'GET') {
-      const professeurs = await prisma.professeurs.findMany({
+      const professeur = await prisma.professeur.findMany({
         include: {
           utilisateur: true, // Inclure les informations de l'utilisateur associé
           matieres: {
@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       // Assurez-vous de ne pas retourner une valeur void.
-      await res.status(200).json(professeurs);
+      await res.status(200).json(professeur);
       return;
     }
 
