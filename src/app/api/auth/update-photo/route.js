@@ -40,7 +40,7 @@ export async function PUT(req) {
         fs.writeFileSync(fullPath, fileBuffer);
     
         // Mettre à jour l'utilisateur avec la nouvelle photo
-        await db.query("UPDATE professeurs SET photo = ? WHERE id = ?", [filePath, decoded.id]);
+        await db.query("UPDATE professeur SET photo = ? WHERE id = ?", [filePath, decoded.id]);
     
         return NextResponse.json({ message: "Photo mise à jour avec succès", photo: filePath }, { status: 200 });
       } catch (error) {
