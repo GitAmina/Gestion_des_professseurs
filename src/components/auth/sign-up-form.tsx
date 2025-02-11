@@ -17,8 +17,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
 import { CloudUpload } from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
+<<<<<<< HEAD
 import Link from 'next/link';
 
+=======
+import Link from '@mui/material/Link';
+import NextLink from 'next/link';
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
 const schema = zod.object({
   nom: zod.string().min(1, { message: 'Le nom est requis' }),
   prenom: zod.string().min(1, { message: 'Le prénom est requis' }),
@@ -187,9 +192,15 @@ export function SignUpForm(): React.JSX.Element {
       </form>
       <Typography color="text.secondary" variant="body2">
     Vous êtes déjà inscrit ?{' '}
+<<<<<<< HEAD
     <Link compone={RouterLink} href={'/auth/sign-in'} underline="hover" variant="subtitle2">
       Connectez-vous
     </Link>
+=======
+    <Link component={NextLink} href="/auth/sign-in" passHref underline="hover" variant="subtitle2">
+  Connectez-vous
+</Link>
+>>>>>>> cd963f70812bcdb76c8f2010a7dace64c2e87fa6
   </Typography>
     </Stack>
   );
