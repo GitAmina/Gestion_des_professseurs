@@ -17,7 +17,7 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
+import { useState, useEffect } from 'react';
 const schema = zod.object({
   email: zod.string().min(1, { message: 'Email est requis' }).email({ message: 'Email invalide' }),
   password: zod.string().min(1, { message: 'Mot de passe est requis' }),
@@ -25,9 +25,9 @@ const schema = zod.object({
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [isPending, setIsPending] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     control,
