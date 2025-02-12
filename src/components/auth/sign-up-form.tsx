@@ -18,7 +18,7 @@ import { CloudUpload } from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
 import Link from '@mui/material/Link';
 import NextLink from 'next/link';
-
+import { useState, useEffect } from 'react';
 const schema = zod.object({
   nom: zod.string().min(1, { message: 'Le nom est requis' }),
   prenom: zod.string().min(1, { message: 'Le prénom est requis' }),
@@ -43,9 +43,9 @@ const defaultValues = {
 
 export function SignUpForm(): React.JSX.Element {
   const router = useRouter();
-  const [isPending, setIsPending] = React.useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [photoPreview, setPhotoPreview] = React.useState<string | null>(null);
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const {
     control,
