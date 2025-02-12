@@ -18,17 +18,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       // Assurez-vous de ne pas retourner une valeur void.
-      await res.status(200).json(professeur);
+       res.status(200).json(professeur);
       return;
     }
 
     // Retourner une réponse explicite pour les méthodes non autorisées
-    return res.status(405).json({ message: 'Méthode non autorisée' });
+    res.status(405).json({ message: 'Méthode non autorisée' });
+    return;
   } catch (error) {
+    // eslint-disable-next-line no-console -- Temporairement désactivé pour le débogage
     console.error('Erreur lors de la récupération des professeurs:', error);
 
     // Assurez-vous d'envoyer la réponse avant de retourner
-    await res.status(500).json({ message: 'Erreur serveur' });
+    res.status(500).json({ message: 'Erreur serveur' });
     return;
   }
 }
