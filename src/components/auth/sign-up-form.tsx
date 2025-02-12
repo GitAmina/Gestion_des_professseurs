@@ -182,7 +182,7 @@ export function SignUpForm(): React.JSX.Element {
             </Stack>
           </FormControl>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-          <Button disabled={isPending} type="submit" variant="contained">S'inscrire</Button>
+          <Button disabled={isPending} type="submit" variant="contained">Inscription</Button>
         </Stack>
       </form>
       <Typography color="text.secondary" variant="body2">
