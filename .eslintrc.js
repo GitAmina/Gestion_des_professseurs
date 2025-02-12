@@ -23,4 +23,9 @@ module.exports = {
     '@typescript-eslint/no-unsafe-return': 'warn',
     'import/no-extraneous-dependencies': ['error', { devDependencies: false }] // Ajout de cette ligne
   },
+  settings: {
+    "import/resolver": {
+      typescript: {} // Permet à ESLint de reconnaître les alias TypeScript
+    }
+  }
 };
