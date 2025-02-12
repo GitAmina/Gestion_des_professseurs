@@ -1,107 +1,123 @@
 'use client';
 
 import * as React from 'react';
-import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
-import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
-import { paths } from '@/paths';
-import { authClient } from '@/lib/auth/client';
-import { useUser } from '@/hooks/use-user';
+import { CloudUpload } from '@mui/icons-material';
+import Avatar from '@mui/material/Avatar';
+import Link from '@mui/material/Link';
+import NextLink from 'next/link';
 
 const schema = zod.object({
-  firstName: zod.string().min(1, { message: 'First name is required' }),
-  lastName: zod.string().min(1, { message: 'Last name is required' }),
-  email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string().min(6, { message: 'Password should be at least 6 characters' }),
-  terms: zod.boolean().refine((value) => value, 'You must accept the terms and conditions'),
+  nom: zod.string().min(1, { message: 'Le nom est requis' }),
+  prenom: zod.string().min(1, { message: 'Le prénom est requis' }),
+  email: zod.string().min(1, { message: 'L’email est requis' }).email(),
+  telephone: zod.string().min(10, { message: 'Le téléphone est requis' }),
+  statut: zod.string().min(1, { message: 'Le statut est requis' }),
+  password: zod.string().min(6, { message: 'Le mot de passe doit contenir au moins 6 caractères' }),
+  photo: zod.instanceof(File, { message: 'Une image est requise' }).optional()
 });
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { firstName: '', lastName: '', email: '', password: '', terms: false } satisfies Values;
+const defaultValues = {
+  nom: '',
+  prenom: '',
+  email: '',
+  telephone: '',
+  statut: '',
+  password: '',
+  photo: undefined
+} satisfies Values;
 
 export function SignUpForm(): React.JSX.Element {
   const router = useRouter();
-
-  const { checkSession } = useUser();
-
   const [isPending, setIsPending] = React.useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [photoPreview, setPhotoPreview] = React.useState<string | null>(null);
 
   const {
     control,
     handleSubmit,
-    setError,
-    formState: { errors },
+    setValue,
+    watch,
+    formState: { errors }
   } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
 
-  const onSubmit = React.useCallback(
-    async (values: Values): Promise<void> => {
-      setIsPending(true);
+  const selectedFile = watch("photo");
 
-      const { error } = await authClient.signUp(values);
+  React.useEffect(() => {
+    if (selectedFile instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => setPhotoPreview(e.target?.result as string);
+      reader.readAsDataURL(selectedFile);
+    }
+  }, [selectedFile]);
 
-      if (error) {
-        setError('root', { type: 'server', message: error });
+  const onSubmit = async (values: Values): Promise<void> => {
+    setIsPending(true);
+    setErrorMessage(null);
+
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value) formData.append(key, value);
+      });
+
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.error || 'Erreur inconnue');
         setIsPending(false);
         return;
       }
 
-      // Refresh the auth state
-      await checkSession?.();
-
-      // UserProvider, for this case, will not refresh the router
-      // After refresh, GuestGuard will handle the redirect
-      router.refresh();
-    },
-    [checkSession, router, setError]
-  );
+      router.push('/auth/sign-in');
+    } catch (error) {
+      setErrorMessage('Quelque chose s’est mal passé');
+      console.error('Erreur:', error);
+      setIsPending(false);
+    }
+  };
 
   return (
     <Stack spacing={3}>
-      <Stack spacing={1}>
-        <Typography variant="h4">Sign up</Typography>
-        <Typography color="text.secondary" variant="body2">
-          Already have an account?{' '}
-          <Link component={RouterLink} href={paths.auth.signIn} underline="hover" variant="subtitle2">
-            Sign in
-          </Link>
-        </Typography>
-      </Stack>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <Typography variant="h4">Inscription</Typography>
+      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
         <Stack spacing={2}>
           <Controller
             control={control}
-            name="firstName"
+            name="nom"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.firstName)}>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput {...field} label="First name" />
-                {errors.firstName ? <FormHelperText>{errors.firstName.message}</FormHelperText> : null}
+              <FormControl error={Boolean(errors.nom)}>
+                <InputLabel>Nom</InputLabel>
+                <OutlinedInput {...field} label="Nom" />
               </FormControl>
             )}
           />
           <Controller
             control={control}
-            name="lastName"
+            name="prenom"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.firstName)}>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput {...field} label="Last name" />
-                {errors.firstName ? <FormHelperText>{errors.firstName.message}</FormHelperText> : null}
+              <FormControl error={Boolean(errors.prenom)}>
+                <InputLabel>Prénom</InputLabel>
+                <OutlinedInput {...field} label="Prénom" />
               </FormControl>
             )}
           />
@@ -110,9 +126,31 @@ export function SignUpForm(): React.JSX.Element {
             name="email"
             render={({ field }) => (
               <FormControl error={Boolean(errors.email)}>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput {...field} label="Email address" type="email" />
-                {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
+                <InputLabel>Email</InputLabel>
+                <OutlinedInput {...field} label="Email" type="email" />
+              </FormControl>
+            )}
+          />
+          <Controller
+            control={control}
+            name="telephone"
+            render={({ field }) => (
+              <FormControl error={Boolean(errors.telephone)}>
+                <InputLabel>Téléphone</InputLabel>
+                <OutlinedInput {...field} label="Téléphone" />
+              </FormControl>
+            )}
+          />
+          <Controller
+            control={control}
+            name="statut"
+            render={({ field }) => (
+              <FormControl error={Boolean(errors.statut)}>
+                <InputLabel>Statut</InputLabel>
+                <Select {...field} label="Statut">
+                  <MenuItem value="vacataire">Vacataire</MenuItem>
+                  <MenuItem value="permanent">Permanent</MenuItem>
+                </Select>
               </FormControl>
             )}
           />
@@ -121,36 +159,38 @@ export function SignUpForm(): React.JSX.Element {
             name="password"
             render={({ field }) => (
               <FormControl error={Boolean(errors.password)}>
-                <InputLabel>Password</InputLabel>
-                <OutlinedInput {...field} label="Password" type="password" />
-                {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
+                <InputLabel>Mot de passe</InputLabel>
+                <OutlinedInput {...field} label="Mot de passe" type="password" />
               </FormControl>
             )}
           />
-          <Controller
-            control={control}
-            name="terms"
-            render={({ field }) => (
-              <div>
-                <FormControlLabel
-                  control={<Checkbox {...field} />}
-                  label={
-                    <React.Fragment>
-                      I have read the <Link>terms and conditions</Link>
-                    </React.Fragment>
+          <FormControl error={Boolean(errors.photo)}>
+            <Stack direction="column" spacing={1} alignItems="center">
+              {photoPreview ? (
+                <Avatar src={photoPreview} sx={{ width: 100, height: 100 }} />
+              ) : (
+                <Avatar sx={{ width: 100, height: 100, bgcolor: 'grey.300' }} />
+              )}
+              <Button variant="contained" component="label" startIcon={<CloudUpload />}>
+                Choisir votre photo
+                <input type="file" accept="image/*" hidden onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    setValue("photo", e.target.files[0]);
                   }
-                />
-                {errors.terms ? <FormHelperText error>{errors.terms.message}</FormHelperText> : null}
-              </div>
-            )}
-          />
-          {errors.root ? <Alert color="error">{errors.root.message}</Alert> : null}
-          <Button disabled={isPending} type="submit" variant="contained">
-            Sign up
-          </Button>
+                }} />
+              </Button>
+            </Stack>
+          </FormControl>
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+          <Button disabled={isPending} type="submit" variant="contained">S'inscrire</Button>
         </Stack>
       </form>
-      <Alert color="warning">Created users are not persisted</Alert>
+      <Typography color="text.secondary" variant="body2">
+    Vous êtes déjà inscrit ?{' '}
+    <Link component={NextLink} href="/auth/sign-in" passHref underline="hover" variant="subtitle2">
+  Connectez-vous
+</Link>
+  </Typography>
     </Stack>
   );
 }
