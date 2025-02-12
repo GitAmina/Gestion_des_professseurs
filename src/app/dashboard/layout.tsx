@@ -13,7 +13,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
-    <AuthGuard>
+    <>
       <GlobalStyles
         styles={{
           body: {
@@ -40,11 +40,11 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
           <MainNav />
           <main>
             <Container maxWidth="xl" sx={{ py: '64px' }}>
-              {children}
+              {children ? children : <p>Chargement...</p>}
             </Container>
           </main>
         </Box>
       </Box>
-    </AuthGuard>
+    </>
   );
 }

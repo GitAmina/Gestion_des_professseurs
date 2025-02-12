@@ -17,66 +17,71 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
-
-import { paths } from '@/paths';
-import { authClient } from '@/lib/auth/client';
-import { useUser } from '@/hooks/use-user';
-
+import { useState } from 'react';
 const schema = zod.object({
-  email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string().min(1, { message: 'Password is required' }),
+  email: zod.string().min(1, { message: 'Email est requis' }).email({ message: 'Email invalide' }),
+  password: zod.string().min(1, { message: 'Mot de passe est requis' }),
 });
-
-type Values = zod.infer<typeof schema>;
-
-const defaultValues = { email: 'sofia@devias.io', password: 'Secret1' } satisfies Values;
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
-
-  const { checkSession } = useUser();
-
-  const [showPassword, setShowPassword] = React.useState<boolean>();
-
-  const [isPending, setIsPending] = React.useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     control,
     handleSubmit,
-    setError,
     formState: { errors },
-  } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
+  } = useForm({ resolver: zodResolver(schema) });
 
-  const onSubmit = React.useCallback(
-    async (values: Values): Promise<void> => {
-      setIsPending(true);
+  const toggleShowPassword = () => setShowPassword((prev) => !prev);
 
-      const { error } = await authClient.signInWithPassword(values);
+  const onSubmit = React.useCallback(async (values: { email: string; password: string }) => {
+    setIsPending(true);
+    setErrorMessage(null);
 
-      if (error) {
-        setError('root', { type: 'server', message: error });
-        setIsPending(false);
-        return;
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+      console.log('Réponse API:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur de connexion');
       }
 
-      // Refresh the auth state
-      await checkSession?.();
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('token', data.token);
+        console.log('Token reçu :', data.token);
+      }
 
-      // UserProvider, for this case, will not refresh the router
-      // After refresh, GuestGuard will handle the redirect
-      router.refresh();
-    },
-    [checkSession, router, setError]
-  );
+      // Vérifier si le token est bien stocké avant de rediriger
+      if (localStorage.getItem('token')) {
+        console.log('Token stocké avec succès');
+        router.replace('/professeurs');
+      } else {
+        console.error('Erreur : Token non stocké.');
+      }
+    } catch (error: any) {
+      setErrorMessage(error.message || 'Une erreur est survenue.');
+    } finally {
+      setIsPending(false);
+    }
+  }, [router]);
 
   return (
     <Stack spacing={4}>
       <Stack spacing={1}>
-        <Typography variant="h4">Sign in</Typography>
+        <Typography variant="h4">Connexion</Typography>
         <Typography color="text.secondary" variant="body2">
-          Don&apos;t have an account?{' '}
-          <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-            Sign up
+          Vous n'avez pas de compte ?{' '}
+          <Link component={RouterLink} href="/auth/sign-up" underline="hover" variant="subtitle2">
+            Inscrivez-vous
           </Link>
         </Typography>
       </Stack>
@@ -86,10 +91,10 @@ export function SignInForm(): React.JSX.Element {
             control={control}
             name="email"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.email)}>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput {...field} label="Email address" type="email" />
-                {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
+              <FormControl error={Boolean(errors.email)} fullWidth>
+                <InputLabel>Email</InputLabel>
+                <OutlinedInput {...field} label="Email" type="email" autoComplete="email" />
+                {errors.email && <FormHelperText>{errors.email.message}</FormHelperText>}
               </FormControl>
             )}
           />
@@ -97,57 +102,45 @@ export function SignInForm(): React.JSX.Element {
             control={control}
             name="password"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.password)}>
-                <InputLabel>Password</InputLabel>
+              <FormControl error={Boolean(errors.password)} fullWidth>
+                <InputLabel>Mot de passe</InputLabel>
                 <OutlinedInput
                   {...field}
-                  endAdornment={
-                    showPassword ? (
-                      <EyeIcon
-                        cursor="pointer"
-                        fontSize="var(--icon-fontSize-md)"
-                        onClick={(): void => {
-                          setShowPassword(false);
-                        }}
-                      />
-                    ) : (
-                      <EyeSlashIcon
-                        cursor="pointer"
-                        fontSize="var(--icon-fontSize-md)"
-                        onClick={(): void => {
-                          setShowPassword(true);
-                        }}
-                      />
-                    )
-                  }
-                  label="Password"
+                  label="Mot de passe"
                   type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  endAdornment={
+                    <button
+                      type="button"
+                      onClick={toggleShowPassword}
+                      aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                        margin: 0,
+                      }}
+                    >
+                      {showPassword ? <EyeSlashIcon size={20} /> : <EyeIcon size={20} />}
+                    </button>
+                  }
                 />
-                {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
+                {errors.password && <FormHelperText>{errors.password.message}</FormHelperText>}
               </FormControl>
             )}
           />
           <div>
-            <Link component={RouterLink} href={paths.auth.resetPassword} variant="subtitle2">
-              Forgot password?
+            <Link component={RouterLink} href="/forgot-password" variant="subtitle2">
+              Mot de passe oublié ?
             </Link>
           </div>
-          {errors.root ? <Alert color="error">{errors.root.message}</Alert> : null}
-          <Button disabled={isPending} type="submit" variant="contained">
-            Sign in
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+          <Button disabled={isPending} type="submit" variant="contained" fullWidth>
+            {isPending ? 'Connexion en cours...' : 'Se connecter'}
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">
-        Use{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          sofia@devias.io
-        </Typography>{' '}
-        with password{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          Secret1
-        </Typography>
-      </Alert>
     </Stack>
   );
 }
