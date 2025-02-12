@@ -11,16 +11,45 @@ import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
-
+import { jwtDecode } from 'jwt-decode'; // Import de jwtDecode
 import { usePopover } from '@/hooks/use-popover';
 
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
-
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
 
   const userPopover = usePopover<HTMLDivElement>();
+  const [user, setUser] = useState<{  photo?: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        router.push('/login'); // Rediriger vers la page de connexion si pas de token
+      } else {
+        try {
+          const decoded: any = jwtDecode(token); // Décoder le token
+          setUser({ 
+           
+            photo: decoded.photo || '/default-avatar.png' // Image par défaut si absente
+          });
+        } catch (error) {
+          console.error('Token invalide', error);
+          localStorage.removeItem('token'); // Nettoyer le token invalide
+          router.push('/login');
+        }
+      }
+      setLoading(false);
+    }
+  }, [router]);
+
+  
+
 
   return (
     <React.Fragment>
@@ -70,7 +99,7 @@ export function MainNav(): React.JSX.Element {
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src="/assets/avatar.png"
+              src={user?.photo} 
               sx={{ cursor: 'pointer' }}
             />
           </Stack>
