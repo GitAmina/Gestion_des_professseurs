@@ -14,7 +14,12 @@ import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Grid from '@mui/material/Unstable_Grid2';
+=======
+import Grid from '@mui/material/Grid';
+
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
 =======
 import Grid from '@mui/material/Grid';
 
@@ -104,6 +109,7 @@ export function AccountDetailsForm() {
           <Divider />
           <CardContent>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <Grid container spacing={3}>
               <Grid md={6} xs={12}>
                 <FormControl fullWidth required>
@@ -140,6 +146,8 @@ export function AccountDetailsForm() {
               </Grid>
             </Grid>
 =======
+=======
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
           <Grid container spacing={2}>
   <Grid item md={6} xs={12}>
     <FormControl fullWidth required>
@@ -175,6 +183,9 @@ export function AccountDetailsForm() {
     </FormControl>
   </Grid>
 </Grid>
+<<<<<<< HEAD
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
+=======
 >>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
           </CardContent>
           <Divider />

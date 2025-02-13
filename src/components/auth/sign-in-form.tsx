@@ -17,7 +17,11 @@ import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
 import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
 import { Controller, useForm } from 'react-hook-form';
 import { z as zod } from 'zod';
+<<<<<<< HEAD
 import { useState, useEffect } from 'react';
+=======
+import { useState } from 'react';
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
 const schema = zod.object({
   email: zod.string().min(1, { message: 'Email est requis' }).email({ message: 'Email invalide' }),
   password: zod.string().min(1, { message: 'Mot de passe est requis' }),
