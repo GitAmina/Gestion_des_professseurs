@@ -1,24 +1,27 @@
 // src/app/professeurs/page.tsx
 'use client';
-
 import React, { useEffect, useState } from 'react';
-import {Button, Box, Typography, Grid, Card} from '@mui/material';
+import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import {Upload as UploadIcon} from "@phosphor-icons/react/dist/ssr/Upload";
 import {Download as DownloadIcon} from "@phosphor-icons/react/dist/ssr/Download";
 import {Plus as PlusIcon} from "@phosphor-icons/react/dist/ssr/Plus";
-import { Delete as DeleteIcon, Edit as EditIcon} from '@mui/icons-material';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS pour Toastify
 
 export interface Professeur {
   id: number;
@@ -92,6 +95,31 @@ export default function Page(): React.JSX.Element {
       Swal.fire("Erreur", "Une erreur s'est produite.", "error");
     }
   };
+
+  const handleDownload = async (id: number) => {
+    try {
+      const response = await fetch(`/api/professeurs/generateCarte?id=${id}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération du PDF');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `carte_professeur_${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Erreur lors du téléchargement du PDF :", error);
+    }
+  };
+
 
   const handleViewDetails = (professeur: Professeur) => {
     setSelectedProfesseur(professeur);
@@ -179,7 +207,7 @@ export default function Page(): React.JSX.Element {
                             Supprimer
                           </Button>
                           {/* Bouton pour télécharger */}
-                          <Button variant="outlined" color="info" startIcon={<DownloadIcon />} size="small">
+                          <Button variant="outlined" color="info" startIcon={<DownloadIcon />} size="small" onClick={() => handleDownload(prof.id)}>
                             Télécharger
                           </Button>
                         </Stack>

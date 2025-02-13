@@ -13,7 +13,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select from '@mui/material/Select';
+<<<<<<< HEAD
 import Grid from '@mui/material/Unstable_Grid2';
+=======
+import Grid from '@mui/material/Grid';
+
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Dialog from '@mui/material/Dialog';
@@ -98,6 +103,7 @@ export function AccountDetailsForm() {
           <CardHeader subheader="Les informations peuvent être modifiées" title="Profil" />
           <Divider />
           <CardContent>
+<<<<<<< HEAD
             <Grid container spacing={3}>
               <Grid md={6} xs={12}>
                 <FormControl fullWidth required>
@@ -133,6 +139,43 @@ export function AccountDetailsForm() {
                 </FormControl>
               </Grid>
             </Grid>
+=======
+          <Grid container spacing={2}>
+  <Grid item md={6} xs={12}>
+    <FormControl fullWidth required>
+      <InputLabel>Prénom</InputLabel>
+      <OutlinedInput value={user.nom} onChange={handleChange} label="Prénom" name="nom" />
+    </FormControl>
+  </Grid>
+  <Grid item md={6} xs={12}>
+    <FormControl fullWidth required>
+      <InputLabel>Nom</InputLabel>
+      <OutlinedInput value={user.prenom} onChange={handleChange} label="Nom" name="prenom" />
+    </FormControl>
+  </Grid>
+  <Grid item md={6} xs={12}>
+    <FormControl fullWidth required>
+      <InputLabel>Email</InputLabel>
+      <OutlinedInput value={user.email} onChange={handleChange} label="Email" name="email" />
+    </FormControl>
+  </Grid>
+  <Grid item md={6} xs={12}>
+    <FormControl fullWidth>
+      <InputLabel>Téléphone</InputLabel>
+      <OutlinedInput value={user.telephone} onChange={handleChange} label="Téléphone" name="telephone" type="tel" />
+    </FormControl>
+  </Grid>
+  <Grid item md={6} xs={12}>
+    <FormControl fullWidth>
+      <InputLabel>Statut</InputLabel>
+      <Select value={user.statut || ''} onChange={handleChange} label="Statut" name="statut">
+        <MenuItem value="vacataire">Vacataire</MenuItem>
+        <MenuItem value="permanent">Permanent</MenuItem>
+      </Select>
+    </FormControl>
+  </Grid>
+</Grid>
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
           </CardContent>
           <Divider />
           <CardActions sx={{ justifyContent: 'flex-end' }}>

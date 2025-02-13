@@ -11,17 +11,21 @@ module.exports = {
     project: './tsconfig.json', // Chemin vers ton fichier tsconfig.json
   },
   rules: {
-    // Désactivation des règles
-    'no-console': 'off', // Désactive l'interdiction d'utiliser console
-    '@typescript-eslint/no-confusing-void-expression': 'off', // Désactive la règle sur les expressions de type void
-    '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off', // Désactive l'obligation d'utiliser unknown dans le catch
-    '@typescript-eslint/no-unsafe-assignment': 'off', // Désactive la règle sur l'assignation d'`any`
-    'import/no-default-export': 'off', // Désactive la règle sur les exports par défaut
+    'no-console': 'off',
+    '@typescript-eslint/no-confusing-void-expression': 'off',
+    '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    'import/no-default-export': 'off',
     '@typescript-eslint/no-floating-promises': 'off',
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/restrict-template-expressions': 'off',
-    '@typescript-eslint/no-unsafe-member-access': 'warn', // Avertir mais pas bloquer
+    '@typescript-eslint/no-unsafe-member-access': 'warn',
     '@typescript-eslint/no-unsafe-return': 'warn',
-
+    'import/no-extraneous-dependencies': ['error', { devDependencies: false }] // Ajout de cette ligne
   },
+  settings: {
+    "import/resolver": {
+      typescript: {} // Permet à ESLint de reconnaître les alias TypeScript
+    }
+  }
 };

@@ -57,7 +57,11 @@ export function SignUpForm(): React.JSX.Element {
 
   const selectedFile = watch("photo");
 
+<<<<<<< HEAD
   React.useEffect(() => {
+=======
+  useEffect(() => {
+>>>>>>> c4d3a4e4ae0d0d6a6abd6617fd035f25be2b55b5
     if (selectedFile instanceof File) {
       const reader = new FileReader();
       reader.onload = (e) => setPhotoPreview(e.target?.result as string);

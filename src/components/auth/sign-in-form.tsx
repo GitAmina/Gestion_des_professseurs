@@ -63,7 +63,7 @@ export function SignInForm(): React.JSX.Element {
       // Vérifier si le token est bien stocké avant de rediriger
       if (localStorage.getItem('token')) {
         console.log('Token stocké avec succès');
-        router.replace('/dashboard');
+        router.replace('/professeurs');
       } else {
         console.error('Erreur : Token non stocké.');
       }
