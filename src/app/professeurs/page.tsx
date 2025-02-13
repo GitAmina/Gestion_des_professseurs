@@ -1,5 +1,6 @@
 // src/app/professeurs/page.tsx
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
@@ -20,8 +21,8 @@ import {Plus as PlusIcon} from "@phosphor-icons/react/dist/ssr/Plus";
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import Swal from 'sweetalert2';
 import Link from 'next/link';
-import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS pour Toastify
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export interface Professeur {
   id: number;
