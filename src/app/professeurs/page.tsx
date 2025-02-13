@@ -96,6 +96,31 @@ export default function Page(): React.JSX.Element {
     }
   };
 
+  const handleDownload = async (id: number) => {
+    try {
+      const response = await fetch(`/api/professeurs/generateCarte?id=${id}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération du PDF');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `carte_professeur_${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Erreur lors du téléchargement du PDF :", error);
+    }
+  };
+
+
   const handleViewDetails = (professeur: Professeur) => {
     setSelectedProfesseur(professeur);
     fetch(`/api/professeurs/${professeur.id}`)
@@ -182,7 +207,7 @@ export default function Page(): React.JSX.Element {
                             Supprimer
                           </Button>
                           {/* Bouton pour télécharger */}
-                          <Button variant="outlined" color="info" startIcon={<DownloadIcon />} size="small">
+                          <Button variant="outlined" color="info" startIcon={<DownloadIcon />} size="small" onClick={() => handleDownload(prof.id)}>
                             Télécharger
                           </Button>
                         </Stack>
