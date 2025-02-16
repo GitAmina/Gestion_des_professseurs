@@ -1,6 +1,7 @@
 // src/app/professeurs/page.tsx
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
@@ -22,6 +23,8 @@ import Swal from 'sweetalert2';
 import Link from 'next/link';
 import { toast, ToastContainer } from 'react-toastify'; // Import Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Import CSS pour Toastify
+import { CircularProgress, Menu, MenuItem } from '@mui/material';
+import { ArrowDropDownIcon } from '@mui/x-date-pickers';
 
 export interface Professeur {
   id: number;
@@ -35,6 +38,71 @@ export interface Professeur {
 }
 
 export default function Page(): React.JSX.Element {
+
+  const [importMessage, setImportMessage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [exportLoading, setExportLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      alert("🚫 Aucun fichier sélectionné !");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      console.log("📤 Envoi du fichier :", file.name);
+      const response = await axios.post("/api/logs/import", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("✅ Réponse de l'importation :", response.data);
+      alert(`✅ Succès : ${response.data.message}`);
+      setImportMessage(`✅ Importation réussie : ${file.name}`);
+    } catch (error: any) {
+      console.error("❌ Erreur d'importation :", error.response?.data || error.message);
+      alert(`❌ Erreur : ${error.response?.data?.error || error.message}`);
+      setImportMessage(`❌ Échec de l'importation`);
+    }
+  };
+
+   // ✅ Gérer l'exportation CSV/JSON avec un seul bouton
+   const handleExport = async (format: "csv" | "json") => {
+    try {
+      setExportLoading(true);
+      const response = await axios.get(`/api/logs/export?format=${format}`, {
+        responseType: "blob",
+      });
+
+      const url = URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `logs.${format}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setExportLoading(false);
+    } catch (error) {
+      console.error("❌ Erreur d'exportation :", error);
+      setExportLoading(false);
+    }
+  };
+
+  // ✅ Ouvrir et fermer le menu déroulant
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+
   const [professeurs, setProfesseurs] = useState<Professeur[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Nombre d'éléments par page
@@ -123,12 +191,34 @@ export default function Page(): React.JSX.Element {
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Professeurs</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
+            <Button onClick={() => fileInputRef.current?.click()} color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
               Importer
+              <input
+            type="file"
+            hidden
+            accept=".xlsx,.xls"
+            ref={fileInputRef}
+            onChange={handleImport}
+          />
             </Button>
-            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />}>
+            <Button color="inherit" startIcon={<DownloadIcon fontSize="var(--icon-fontSize-md)" />} endIcon={<ArrowDropDownIcon />}
+          onClick={handleMenuOpen}
+          disabled={exportLoading}>
               Exporter
             </Button>
+            {/* Bouton Export avec Menu déroulant */}
+            <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={() => { handleExport("csv"); handleMenuClose(); }}>
+            📑 Exporter en CSV
+          </MenuItem>
+          <MenuItem onClick={() => { handleExport("json"); handleMenuClose(); }}>
+            📄 Exporter en JSON
+          </MenuItem>
+        </Menu>
           </Stack>
         </Stack>
         <div>
@@ -242,6 +332,19 @@ export default function Page(): React.JSX.Element {
               ) : (
                 <Typography>Aucune photo</Typography>
               )}
+      {/* ✅ Affichage du message d'importation */}
+              {importMessage && (
+        <p style={{ color: importMessage.includes("réussie") ? "green" : "red" }}>
+          {importMessage}
+        </p>
+      )}
+      {/* ✅ Loader lors de l'export */}
+      {exportLoading && (
+        <Box display="flex" justifyContent="center" mt={2}>
+          <CircularProgress size={24} />
+          <Typography ml={1}>Exportation en cours...</Typography>
+        </Box>
+      )}
             </div>
           </Stack>
           <Typography variant="body1" sx={{ marginTop: 2 }}><strong>Matières :</strong></Typography>
