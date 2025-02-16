@@ -39,7 +39,12 @@ export function SignInForm(): React.JSX.Element {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(schema) });
+  } = useForm({ resolver: zodResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+   });
 
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
 
