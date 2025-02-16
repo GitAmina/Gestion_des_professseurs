@@ -69,7 +69,7 @@ export async function GET(req: Request) {
 
     // Charger et afficher le logo de l’université
     try {
-      const logoUrl = "http://localhost:3000/assets/logo-udc.png"; // Remplace par ton vrai chemin
+      const logoUrl = "http://localhost:3000/assets/logo-udc.png";
       const response = await fetch(logoUrl);
       if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
 
@@ -92,7 +92,7 @@ export async function GET(req: Request) {
     // Ajouter la photo du professeur si disponible
     if (professeur.photo) {
       try {
-        const baseUrl = "http://localhost:3000"; // Remplace par ton URL réelle
+        const baseUrl = "http://localhost:3000";
         const photoUrl = encodeURI(`${baseUrl}${professeur.photo}`);
 
         console.log("Chargement de l'image:", photoUrl);
